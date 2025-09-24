@@ -89,8 +89,11 @@ class MCPClient:
             messages=messages,
             # stream=True
         )
-        print(response)
-        return "You said you were testing"
+
+        return f"""
+        Reasoning: {response.choices[0].message.reasoning}
+        Response: {response.choices[0].message.content}
+        """
 
     async def chat_loop(self):
         """Run an interactive chat loop"""

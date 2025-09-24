@@ -1,14 +1,15 @@
-from typing import Any
+from typing import Any, List
+
 import httpx
 from fastmcp import FastMCP
-import asyncio
+
+
 
 # init mcp server
-mcp = FastMCP("weather")
-USER_AGENT = "my-weather-app"
+mcp = FastMCP("my_cool_tools")
+USER_AGENT = "my-tools-app"
 
-
-async def make_nws_request(url: str) -> dict[str, Any] | None:
+async def make_request(url: str, USER_AGENT) -> dict[str, Any] | None:
     """Make a request to the weather API with proper error handling."""
     headers = {
         "User-Agent": USER_AGENT,
@@ -23,19 +24,35 @@ async def make_nws_request(url: str) -> dict[str, Any] | None:
         except:
             return None
 
-
-def format_alert(feature: dict) -> str:
-    """Format an alert feature into a readable string."""
-    props = feature["properties"]
-
-    return f"""
-    Event: {props.get('event', 'Unknown')}
-    Area: {props.get('areaDesc', 'Unknown')}
-    Severity: {props.get('severity', 'Unknown')}
-    Description: {props.get('description', 'No description available')}
-    Instructions: {props.get('instruction', 'No specific instructions provided')}
+@mcp.tool()
+async def get_subreddit_news(subreddit: str, limit: int = 5)-> List[dict]:
+    """Gets by default hot 5 posts from subreddits param
+    :param subreddit: the subredit to look for, e.g. worldnews, tech, news, etc.
+    :return: a list of dict features posts properties
     """
+    url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit={limit}"
 
+    response = await make_request(url, USER_AGENT)
+
+    if not response or "data" not in response:
+        return "Unable to fetch subreddit data."
+
+    posts = []
+
+    for post in response["data"]["children"]:
+        d = post["data"]
+        posts.append({
+            "title": d["title"],
+            "url": d["url"],
+            "permalink": f"https://www.reddit.com{d['permalink']}",
+            "subreddit": d["subreddit"],
+            "created_utc": d["created_utc"],
+            "ups": d["ups"],
+            "num_comments": d["num_comments"],
+            "thumbnail": d.get("thumbnail") if d.get("thumbnail", "").startswith("http") else None
+        })
+
+    return posts
 @mcp.tool()
 async def get_forecast(latitude: float, longitude: float) -> str:
     """Get current weather forecast for a location.
@@ -51,7 +68,7 @@ async def get_forecast(latitude: float, longitude: float) -> str:
         f"&timezone=auto"
     )
 
-    data = await make_nws_request(url)
+    data = await make_request(url, USER_AGENT)
     if not data or "current" not in data:
         return "Unable to fetch forecast data for this location."
 
@@ -69,6 +86,9 @@ async def get_forecast(latitude: float, longitude: float) -> str:
     )
 
 
+
+
+# rename weather to tools and all all the functions insdie
 
 
 if __name__ == "__main__":

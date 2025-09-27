@@ -10,7 +10,9 @@ from mcp import ClientSession, StdioServerParameters, stdio_client
 
 class MCPClient:
     def __init__(self):
+        # managing the connection of the client
         self.session: Optional[ClientSession] = None
+        # ensures resources are properly closed when not needed in async context
         self.exit_stack = AsyncExitStack()
         # todo: use .env instead
         # self.client = groq.Groq(api_key=sys.argv[2])
@@ -33,18 +35,26 @@ class MCPClient:
 
         command = "python" if is_python else "node"
 
+        # preparing the mcp client to run server's script
         server_params = StdioServerParameters(
             command=command,
             args=[server_script_path],
             env=None
         )
 
+        # stdio client: launches the server script then opens a communication via stdio channel
+        # passing server_params to stdio client here tells it what server commands to run in order to launch it
         stdio_transport = await self.exit_stack.enter_async_context(stdio_client(server_params))
 
+        # stdio client returns a (reader, writer)
+        # which let's the client read/write to the channel/server
         self.sdtio, self.write = stdio_transport
+
+        # wraps the io streams (read/write) into mcp session object to handle tool invocation and lifecycle
 
         self.session = await self.exit_stack.enter_async_context(ClientSession(self.sdtio, self.write))
 
+        # initializes and starts the session
         await self.session.initialize()
 
         # listing available tools

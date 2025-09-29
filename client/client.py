@@ -1,4 +1,5 @@
 import asyncio
+import json
 import sys
 from contextlib import AsyncExitStack
 from typing import Optional
@@ -74,24 +75,16 @@ class MCPClient:
 
         response = await self.session.list_tools()
 
-        available_tools = [{
-            "type": "function",
-            "function": {
-                "name": tool.name,
-                "description": tool.description,
-                "parameters": {
-                    "type": "object",
-                    "properties":{
-                        key: {
-                            "type": value["type"],
-                            "description": value.get("title", "")
-                        }
-                        for key, value in tool.inputSchema['properties'].items()
-                    },
-                    "required": list(tool.inputSchema['properties'].keys())
+        available_tools = []
+        for tool in response.tools:
+            available_tools.append({
+                "type": "function",
+                "function": {
+                    "name": tool.name,
+                    "description": tool.description,
+                    "parameters": tool.inputSchema  # already JSON Schema
                 }
-            }
-        } for tool in response.tools]
+            })
 
         response = self.client.chat.completions.create(
             model="openai/gpt-oss-120b",
@@ -100,10 +93,43 @@ class MCPClient:
             # stream=True
         )
 
-        return f"""
-        Reasoning: {response.choices[0].message.reasoning}
-        Response: {response.choices[0].message.content}
-        """
+        # Process response and handle tool calls
+        tool_results = []
+        final_text = []
+        print(response)
+        for choice in response.choices:
+            if choice.finish_reason == 'stop': # text
+                final_text.append(choice.message.content)
+            elif choice.finish_reason == 'tool_calls':
+                tool_name = choice.message.tool_calls[0].function.name
+                tool_args = json.loads(choice.message.tool_calls[0].function.arguments or "{}")
+
+                # Execute tool call
+                result = await self.session.call_tool(tool_name, tool_args)
+                print("executing", {"call": tool_name, "result": result})
+                tool_results.append({"call": tool_name, "result": result})
+                final_text.append(f"[Calling tool {tool_name} with args {tool_args}]")
+
+                # Continue conversation with tool results
+                if choice.message.content:
+                    messages.append({
+                        "role": "assistant",
+                        "content": choice.message.content
+                    })
+                messages.append({
+                    "role": "user",
+                    "content": result.content
+                })
+
+                # Get next response from Claude
+                response = self.client.chat.completions.create(
+                    model="openai/gpt-oss-120b",
+                    messages=messages,
+                    # stream=True
+                )
+
+                final_text.append(response.choices[0].message.content)
+        return "\n".join(final_text
 
     async def chat_loop(self):
         """Run an interactive chat loop"""

@@ -129,7 +129,7 @@ class MCPClient:
                 )
 
                 final_text.append(response.choices[0].message.content)
-        return "\n".join(final_text
+        return "\n".join(final_text)
 
     async def chat_loop(self):
         """Run an interactive chat loop"""

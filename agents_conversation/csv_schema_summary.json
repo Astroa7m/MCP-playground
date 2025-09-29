@@ -1,0 +1,138 @@
+[
+  {
+    "source_file": "Faculty.csv",
+    "columns": [
+      "id",
+      "name",
+      "nameArabic",
+      "description",
+      "descriptionArabic",
+      "HeadOfFaculty",
+      "phoneNumber",
+      "email",
+      "link"
+    ]
+  },
+  {
+    "source_file": "FAQ.csv",
+    "columns": [
+      "id",
+      "question",
+      "questionArabic",
+      "answer",
+      "answerArabic"
+    ]
+  },
+  {
+    "source_file": "FAQ2.csv",
+    "columns": [
+      "prompt",
+      "completion"
+    ]
+  },
+  {
+    "source_file": "FoundationProgramFees.csv",
+    "columns": [
+      "id",
+      "MethodOfDelivery/MethodOfLearning",
+      "MethodOfDeliveryArabic/MethodOfLearningArabic",
+      "Amount (R.O)"
+    ]
+  },
+  {
+    "source_file": "FullTimeLearningFees.csv",
+    "columns": [
+      "id",
+      "MajorID",
+      " Major",
+      "MajorArabic",
+      "Amount (R.O)"
+    ]
+  },
+  {
+    "source_file": "Major.csv",
+    "columns": [
+      "id",
+      "name",
+      "nameArabic",
+      "requiredCredits",
+      "degreeLevel",
+      "degreeLevelArabic",
+      "description",
+      "descriptionArabic",
+      "studyPlan",
+      "offeredByFaculty"
+    ]
+  },
+  {
+    "source_file": "modules.csv",
+    "columns": [
+      "course_code",
+      "course_title",
+      "credit_hours",
+      "course_desc",
+      "pre-requisite",
+      "course_objectives",
+      "course_outcomes"
+    ]
+  },
+  {
+    "source_file": "NonRefundableEnrollmentFees.csv",
+    "columns": [
+      "id",
+      "FeeType",
+      "FeeTypeArabic",
+      "Amount (R.O)"
+    ]
+  },
+  {
+    "source_file": "OpenLearningFees.csv",
+    "columns": [
+      "id",
+      "MajorID",
+      " Major",
+      "MajorArabic",
+      "Amount (R.O)"
+    ]
+  },
+  {
+    "source_file": "PassTutor.csv",
+    "columns": [
+      "id",
+      "name",
+      "nameArabic",
+      "email",
+      "moduleTaught",
+      "major"
+    ]
+  },
+  {
+    "source_file": "Requirement.csv",
+    "columns": [
+      "id",
+      "requiredFor",
+      "requiredForArabic",
+      "requirement",
+      "requirementArabic"
+    ]
+  },
+  {
+    "source_file": "tutors.csv",
+    "columns": [
+      "name",
+      "title",
+      "email",
+      "specialization",
+      "phone",
+      "office",
+      "faculty",
+      "google scholar url",
+      "research gate url",
+      "biography",
+      "teaching",
+      "experience",
+      "publications",
+      "profile url"
+    ]
+  }
+]

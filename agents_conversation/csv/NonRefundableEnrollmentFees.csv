@@ -1,0 +1,8 @@
+id,FeeType,FeeTypeArabic,Amount (R.O)
+nref01,Application of Admission,طلب القبول,19.3
+nref02,Placement Test (Arabic) - Optional,اختبار تحديد المستوى (عربي) - اختياري,5.8
+nref03,Placement Test (English) - Optional,اختبار تحديد المستوى (الإنجليزية) - اختياري,5.8
+nref04,Placement Test (Math) - Optional,اختبار تحديد المستوى (الرياضيات) - اختياري,5.8
+nref05,Placement Test (IT) - Optional,اختبار تحديد المستوى (IT) - اختياري,5.8
+nref06,Registration Fees of new student,رسوم تسجيل الطالب الجديد,27.0
+nref07,Total,المجموع,69.500

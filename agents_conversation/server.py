@@ -12,7 +12,7 @@ client = chromadb.PersistentClient(path=client_file_name)
 collection = client.get_collection(collection_name)
 
 @mcp.tool()
-def aou_retrieval_tool(query: str, source_files: list[str] = ('FAQ.csv', 'FAQ2.csv'), n_result: int = 6):
+def aou_retrieval_tool(query: str, source_files: list[str] | None = None, n_result: int = 6):
     """
     Retrieves relevant information from ChromaDB based on a user query and optional source file filter.
 
@@ -47,6 +47,9 @@ def aou_retrieval_tool(query: str, source_files: list[str] = ('FAQ.csv', 'FAQ2.c
       aou_retrieval_tool("What is the grading policy?", source_files=None)
     """
 
+    if not source_files:
+        # default value
+        source_files = ['FAQ.csv', 'FAQ2.csv']
     where_clause = None
     if source_files:
         where_clause = {"source_file": {"$in": source_files}}

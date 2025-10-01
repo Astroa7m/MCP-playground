@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 import sys
 from contextlib import AsyncExitStack
 from typing import Optional
@@ -34,15 +35,21 @@ class MCPClient:
         if not (is_python or is_js):
             raise ValueError("Server script must be a .py or .js file")
 
-        command = "python" if is_python else "node"
+        command = "uv" if is_python else "node"
+
+        full_dir = os.path.dirname(server_script_path)  # "/path/tp/server/"
+        server_file = os.path.basename(server_script_path)  # e.g. "server.py"
 
         # preparing the mcp client to run server's script
         server_params = StdioServerParameters(
             command=command,
-            args=[server_script_path],
-            env=None
+            args=[
+                "--directory",
+                full_dir,
+                "run",
+                server_file
+            ]
         )
-
         # stdio client: launches the server script then opens a communication via stdio channel
         # passing server_params to stdio client here tells it what server commands to run in order to launch it
         stdio_transport = await self.exit_stack.enter_async_context(stdio_client(server_params))
